@@ -2,12 +2,15 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\InvoiceRepository;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=InvoiceRepository::class)
  */
+#[ApiResource]
 class Invoice
 {
     /**
@@ -15,22 +18,22 @@ class Invoice
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(type="float")
      */
-    private $amount;
+    private ?float $amount;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    private $sentAt;
+    private ?DateTimeInterface $sentAt;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $status;
+    private ?string $status;
 
     /**
      * @ORM\ManyToOne(targetEntity=Customer::class, inversedBy="invoices")
@@ -41,7 +44,7 @@ class Invoice
     /**
      * @ORM\Column(type="integer")
      */
-    private $chrono;
+    private ?int $chrono;
 
     public function getId(): ?int
     {
@@ -60,12 +63,12 @@ class Invoice
         return $this;
     }
 
-    public function getSentAt(): ?\DateTimeInterface
+    public function getSentAt(): ?DateTimeInterface
     {
         return $this->sentAt;
     }
 
-    public function setSentAt(\DateTimeInterface $sentAt): self
+    public function setSentAt(DateTimeInterface $sentAt): self
     {
         $this->sentAt = $sentAt;
 

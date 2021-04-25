@@ -16,11 +16,8 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
  */
 class AppFixtures extends Fixture
 {
-    /**
-     * @var UserPasswordEncoderInterface
-     */
-    private $encodeur;
 
+    private UserPasswordEncoderInterface $encodeur;
 
     public function __construct(UserPasswordEncoderInterface $encoder)
     {
@@ -33,7 +30,7 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager)
     {
         $faker = Factory::create('fr_FR');
-        for($nbUser = 0; $nbUser < 10; $nbUser++) {
+        for ($nbUser = 0; $nbUser < 10; $nbUser++) {
             $user = new User();
             $chrono = 1;
             $hash = $this->encodeur->encodePassword($user, 'password');
@@ -69,8 +66,6 @@ class AppFixtures extends Fixture
                 }
             }
         }
-
-
 
         $manager->flush();
     }
