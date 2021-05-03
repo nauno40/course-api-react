@@ -2,59 +2,102 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Repository\CustomerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=CustomerRepository::class)
  */
-#[ApiResource]
+#[ApiResource(normalizationContext: ["groups"=> "customers_visibility"])]
+#[ApiFilter(SearchFilter::class, strategy: "partial",)]
+#[ApiFilter(OrderFilter::class)]
 class Customer
 {
+
+    const STATUS_PAID = 'PAID';
+    const STATUS_CANCELLED = 'CANCELLED';
+    const STATUS_SENT = 'SENT';
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
+    #[Groups(["customers_visibility", "invoice_visibility"])]
     private ?int $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(["customers_visibility", "invoice_visibility"])]
     private ?string $firstName;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(["customers_visibility", "invoice_visibility"])]
     private ?string $lastName;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(["customers_visibility", "invoice_visibility"])]
     private ?string $email;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
+    #[Groups(["customers_visibility", "invoice_visibility"])]
     private ?string $company;
 
     /**
      * @ORM\OneToMany(targetEntity=Invoice::class, mappedBy="customer")
      */
+    #[Groups(["customers_visibility"])]
     private $invoices;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="customers")
      */
+    #[Groups(["customers_visibility"])]
     private ?User $user;
 
     #[Pure] public function __construct()
     {
         $this->invoices = new ArrayCollection();
+    }
+
+    /**
+     * Permet de récupérer le total des Invoices
+     * @return float
+     */
+    #[Groups(["customers_visibility"])]
+    public function getTotalAmount(): float
+    {
+        return array_reduce($this->invoices->toArray(), function ($total, $invoice) {
+            return $total + $invoice->getAmount();
+        }, 0);
+    }
+
+    /**
+     * Permet de récupérer le montant total non payé ou annulé
+     * @return float
+     */
+    #[Groups(["customers_visibility"])]
+    public function getUnpaidAmount(): float
+    {
+        return array_reduce($this->invoices->toArray(), function ($total, $invoice) {
+            return $total + ($invoice->getStatus() === self::STATUS_PAID
+                || $invoice->getStatus() === self::STATUS_CANCELLED) ? 0 : $invoice->getAmount();
+        }, 0);
     }
 
     public function getId(): ?int
@@ -111,7 +154,7 @@ class Customer
     }
 
     /**
-     * @return Collection|Invoice[]
+     * @return Collection
      */
     public function getInvoices(): Collection
     {

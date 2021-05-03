@@ -9,9 +9,10 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @ORM\Entity(repositoryClass="App\Repository\UserRepository", repositoryClass=UserRepository::class)
  */
 #[ApiResource]
 class User implements UserInterface
@@ -21,11 +22,13 @@ class User implements UserInterface
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
+    #[Groups(["customers_visibility", "invoice_visibility"])]
     private ?int $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
      */
+    #[Groups(["customers_visibility", "invoice_visibility"])]
     private ?string $email;
 
     /**
@@ -42,11 +45,13 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(["customers_visibility", "invoice_visibility"])]
     private ?string $firstName;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
+    #[Groups(["customers_visibility", "invoice_visibility"])]
     private ?string $lastName;
 
     /**
