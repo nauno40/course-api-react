@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use App\Controller\InvoiceIncrementationController;
 use App\Repository\InvoiceRepository;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
@@ -14,8 +15,32 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * @ORM\Entity(repositoryClass=InvoiceRepository::class)
  */
 #[ApiResource(
+    itemOperations: ['GET', 'PUT', 'DELETE',
+    'increment' => [
+        'method' => 'POST',
+        'path' => '/factures/{id}/increment',
+        'controller' => InvoiceIncrementationController::class,
+        'openapi_context' => [
+            'summary' => 'Incrémente une facture',
+            'description' => 'Incrémente une facture donnée',
+            'requestBody' => [
+                'content' => [
+                    'application/json' => [
+                        'schema' => [
+                            'type' => 'object',
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ]],
+    subresourceOperations: [
+    'api_customers_invoices_get_subresource' => [
+        "normalization_context" => ["groups" => "invoice_subresource"]
+    ]],
     attributes: ["pagination_enabled" => true, "order" => ['sentAt' => 'desc']],
-    normalizationContext: ["groups"=> "invoice_visibility"])]
+    normalizationContext: ["groups" => "invoice_visibility"]
+)]
 #[ApiFilter(OrderFilter::class, properties: ["amount", "sentAt"])]
 class Invoice
 {
@@ -24,25 +49,25 @@ class Invoice
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    #[Groups(["invoice_visibility", "customers_visibility"])]
+    #[Groups(["invoice_visibility", "customers_visibility", "invoice_subresource"])]
     private ?int $id;
 
     /**
      * @ORM\Column(type="float")
      */
-    #[Groups(["invoice_visibility", "customers_visibility"])]
+    #[Groups(["invoice_visibility", "customers_visibility", "invoice_subresource"])]
     private ?float $amount;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    #[Groups(["invoice_visibility", "customers_visibility"])]
+    #[Groups(["invoice_visibility", "customers_visibility", "invoice_subresource"])]
     private ?DateTimeInterface $sentAt;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    #[Groups(["invoice_visibility", "customers_visibility"])]
+    #[Groups(["invoice_visibility", "customers_visibility", "invoice_subresource"])]
     private ?string $status;
 
     /**
@@ -55,7 +80,7 @@ class Invoice
     /**
      * @ORM\Column(type="integer")
      */
-    #[Groups(["invoice_visibility", "customers_visibility"])]
+    #[Groups(["invoice_visibility", "customers_visibility", "invoice_subresource"])]
     private ?int $chrono;
 
     /**
