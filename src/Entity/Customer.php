@@ -13,16 +13,17 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=CustomerRepository::class)
  */
 #[ApiResource(
-    collectionOperations: ['GET' , 'POST'],
+    collectionOperations: ['GET', 'POST'],
     itemOperations: ['GET', 'PUT', 'DELETE'],
     normalizationContext: ["groups" => "customers_visibility"]
 )]
-#[ApiFilter(SearchFilter::class, strategy: "partial",)]
+#[ApiFilter(SearchFilter::class, strategy: "partial")]
 #[ApiFilter(OrderFilter::class)]
 class Customer
 {
@@ -41,18 +42,24 @@ class Customer
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Le prénom du Customer est obligatoire")
+     * @Assert\Length(min=3, minMessage="Le prénom doit faire entre 3 & 255 caractères", max=255, maxMessage="Le prénom doit faire entre 3 & 255 caractères")
      */
     #[Groups(["customers_visibility", "invoice_visibility"])]
     private ?string $firstName;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Le prénom du Customer est obligatoire")
+     * @Assert\Length(min=3, minMessage="Le nom doit faire entre 3 & 255 caractères", max=255, maxMessage="Le nom doit faire entre 3 & 255 caractères")
      */
     #[Groups(["customers_visibility", "invoice_visibility"])]
     private ?string $lastName;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="L'addresse email du Customer est obligatoire")
+     * @Assert\Email(message="L'email doit être valide")
      */
     #[Groups(["customers_visibility", "invoice_visibility"])]
     private ?string $email;

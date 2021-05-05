@@ -10,9 +10,13 @@ use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository", repositoryClass=UserRepository::class)
+ * @UniqueEntity("email", message="Email déjà utilisé")
  */
 #[ApiResource]
 class User implements UserInterface
@@ -21,12 +25,15 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     *
      */
     #[Groups(["customers_visibility", "invoice_visibility"])]
     private ?int $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Assert\NotBlank(message="L'addresse email du Customer est obligatoire")
+     * @Assert\Email(message="L'email doit être valide")
      */
     #[Groups(["customers_visibility", "invoice_visibility"])]
     private ?string $email;
@@ -39,17 +46,23 @@ class User implements UserInterface
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
+     * @Assert\NotBlank(message="Le mot de passe est obligatoire")
      */
     private string $password;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Le prénom du Customer est obligatoire")
+     * @Assert\Length(min=3, minMessage="Le prénom doit faire entre 3 & 255 caractères", max=255, maxMessage="Le prénom doit faire entre 3 & 255 caractères")
      */
     #[Groups(["customers_visibility", "invoice_visibility"])]
     private ?string $firstName;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Le prénom du Customer est obligatoire")
+     * @Assert\Length(min=3, minMessage="Le nom doit faire entre 3 & 255 caractères", max=255, maxMessage="Le nom doit faire entre 3 & 255 caractères")
+     *
      */
     #[Groups(["customers_visibility", "invoice_visibility"])]
     private ?string $lastName;
