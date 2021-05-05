@@ -10,6 +10,7 @@ use App\Repository\InvoiceRepository;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=InvoiceRepository::class)
@@ -39,7 +40,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         "normalization_context" => ["groups" => "invoice_subresource"]
     ]],
     attributes: ["pagination_enabled" => true, "order" => ['sentAt' => 'desc']],
-    normalizationContext: ["groups" => "invoice_visibility"]
+    denormalizationContext: ['disable_type_enforcement'=> true]
 )]
 #[ApiFilter(OrderFilter::class, properties: ["amount", "sentAt"])]
 class Invoice
@@ -54,18 +55,25 @@ class Invoice
 
     /**
      * @ORM\Column(type="float")
+     * @Assert\NotBlank(message="Le montant de la facture est obligatoire")
+     * @Assert\Type(type="numeric", message="Le montant de la facture doit être numérique")
      */
     #[Groups(["invoice_visibility", "customers_visibility", "invoice_subresource"])]
     private ?float $amount;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Assert\Type(type="DateTime", message="La date doit être au format YYYY-MM-DD")
+     * @Assert\NotBlank(message="la date d'envoi doit être renseignéée")
+     *
      */
     #[Groups(["invoice_visibility", "customers_visibility", "invoice_subresource"])]
     private ?DateTimeInterface $sentAt;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Le statut de la facture est obligatoire")
+     * @Assert\Choice(choices={"SENT", "PAID", "CANCELED"}, message="Le statut doit être SENT, PAID ou CANCELED")
      */
     #[Groups(["invoice_visibility", "customers_visibility", "invoice_subresource"])]
     private ?string $status;
@@ -73,12 +81,15 @@ class Invoice
     /**
      * @ORM\ManyToOne(targetEntity=Customer::class, inversedBy="invoices")
      * @ORM\JoinColumn(nullable=false)
+     * @Assert\NotBlank(message="Le client de la facture doit être renseigné")
      */
     #[Groups(["invoice_visibility"])]
     private $customer;
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\NotBlank(message="Le chrono doit être renseigné")
+     * @Assert\Type(type="integer", message="Le chrono doit être un nombre")
      */
     #[Groups(["invoice_visibility", "customers_visibility", "invoice_subresource"])]
     private ?int $chrono;
