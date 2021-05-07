@@ -3,8 +3,12 @@
 namespace App\Repository;
 
 use App\Entity\Invoice;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @method Invoice|null find($id, $lockMode = null, $lockVersion = null)
@@ -17,6 +21,26 @@ class InvoiceRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Invoice::class);
+    }
+
+    /**
+     * @param User|UserInterface $user
+     * @return mixed
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     */
+    public function findNextChrono(User|UserInterface $user): mixed
+    {
+        return
+            $this->createQueryBuilder("i")
+                ->select("i.chrono")
+                ->join("i.customer", "c")
+                ->where("c.user = :user")
+                ->setParameter("user", $user)
+                ->orderBy("i.chrono", "DESC")
+                ->setMaxResults(1)
+                ->getQuery()
+                ->getSingleScalarResult() + 1;
     }
 
     // /**

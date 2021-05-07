@@ -12,6 +12,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JetBrains\PhpStorm\Pure;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -201,7 +202,7 @@ class Customer
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(User|UserInterface $user): self
     {
         $this->user = $user;
 
