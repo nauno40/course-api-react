@@ -68,7 +68,7 @@ class Invoice
      *
      */
     #[Groups(["invoice_visibility", "customers_visibility", "invoice_subresource"])]
-    private ?DateTimeInterface $sentAt;
+    private ?DateTimeInterface $sentAt = null;
 
     /**
      * @ORM\Column(type="string", length=255)
