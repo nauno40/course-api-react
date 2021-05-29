@@ -39,8 +39,9 @@ use Symfony\Component\Validator\Constraints as Assert;
     'api_customers_invoices_get_subresource' => [
         "normalization_context" => ["groups" => "invoice_subresource"]
     ]],
-    attributes: ["pagination_enabled" => true, "order" => ['sentAt' => 'desc']],
-    denormalizationContext: ['disable_type_enforcement'=> true]
+    attributes: ["pagination_enabled" => false, "order" => ['sentAt' => 'desc']],
+    denormalizationContext: ['disable_type_enforcement'=> true],
+    normalizationContext: ["groups" => "invoice_visibility"]
 )]
 #[ApiFilter(OrderFilter::class, properties: ["amount", "sentAt"])]
 class Invoice
