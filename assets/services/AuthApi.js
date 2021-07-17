@@ -1,7 +1,6 @@
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 
-let token;
 
 async function authenticate(credentials) {
     const response = await axios.post("/api/login_check", credentials);
@@ -39,15 +38,17 @@ function setUp() {
 }
 
 function isAuthenticated() {
+    const token = window.localStorage.getItem("authToken");
+
     if (token) {
         const { exp: expiration } = jwtDecode(token);
 
         if (expiration * 1000 > new Date().getTime()) {
             return true;
+        } else {
+            return false;
         }
-        return false;
     }
-    return false;
 }
 
 export default {
