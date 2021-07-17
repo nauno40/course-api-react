@@ -9,6 +9,7 @@ import CustomerPage from "./pages/CustomerPage";
 import HomePage from "./pages/HomePage";
 import InvoicesPage from "./pages/InvoicesPage";
 import InvoicePage from "./pages/InvoicePage";
+import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage";
 import AuthApi from "./services/AuthApi";
 import AuthContext from "./contexts/AuthContext";
@@ -30,6 +31,7 @@ const App = () => {
                 <main className="container pt-5">
                     <Switch>
                         <Route path={"/login"} component={LoginPage} />
+                        <Route path={"/register"} component={RegisterPage} />
                         <PrivateRoute path="/customers/:id" component={CustomerPage} />
                         <PrivateRoute path="/customers" component={CustomersPage} />
                         <PrivateRoute path="/invoices/:id" component={InvoicePage} />
