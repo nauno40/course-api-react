@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Pagination from "../components/Pagination";
 import CustomersApi from "../services/CustomersApi";
 
-const CustomersPage = (props) => {
+const CustomersPage = () => {
 	const [customers, setCustomers] = useState([]);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [search, setSearch] = useState("");

@@ -8,6 +8,7 @@ import CustomersPage from "./pages/CustomersPage";
 import CustomerPage from "./pages/CustomerPage";
 import HomePage from "./pages/HomePage";
 import InvoicesPage from "./pages/InvoicesPage";
+import InvoicePage from "./pages/InvoicePage";
 import LoginPage from "./pages/LoginPage";
 import AuthApi from "./services/AuthApi";
 import AuthContext from "./contexts/AuthContext";
@@ -31,6 +32,7 @@ const App = () => {
                         <Route path={"/login"} component={LoginPage} />
                         <PrivateRoute path="/customers/:id" component={CustomerPage} />
                         <PrivateRoute path="/customers" component={CustomersPage} />
+                        <PrivateRoute path="/invoices/:id" component={InvoicePage} />
                         <PrivateRoute path="/invoices" component={InvoicesPage} />
                         <Route path={"/"} component={HomePage} />
                     </Switch>
@@ -38,6 +40,7 @@ const App = () => {
             </HashRouter>
         </AuthContext.Provider>
     )
-}   
+}
+
 const rootElement = document.querySelector('#app');
 ReactDOM.render(<App />, rootElement);
