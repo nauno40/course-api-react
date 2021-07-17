@@ -53,7 +53,7 @@ const Navbar = ({ history }) => {
 							<>
 								<li className="nav-item">
 									<NavLink className="nav-link" to="/register">
-										Insription
+										Inscription
 									</NavLink>
 								</li>
 								<li className="nav-item">

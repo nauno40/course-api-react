@@ -16,31 +16,34 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass=InvoiceRepository::class)
  */
 #[ApiResource(
-    itemOperations: ['GET', 'PUT', 'DELETE',
-    'increment' => [
-        'method' => 'POST',
-        'path' => '/factures/{id}/increment',
-        'controller' => InvoiceIncrementationController::class,
-        'openapi_context' => [
-            'summary' => 'Incrémente une facture',
-            'description' => 'Incrémente une facture donnée',
-            'requestBody' => [
-                'content' => [
-                    'application/json' => [
-                        'schema' => [
-                            'type' => 'object',
+    itemOperations: [
+        'GET', 'PUT', 'DELETE',
+        'increment' => [
+            'method' => 'POST',
+            'path' => '/factures/{id}/increment',
+            'controller' => InvoiceIncrementationController::class,
+            'openapi_context' => [
+                'summary' => 'Incrémente une facture',
+                'description' => 'Incrémente une facture donnée',
+                'requestBody' => [
+                    'content' => [
+                        'application/json' => [
+                            'schema' => [
+                                'type' => 'object',
+                            ]
                         ]
                     ]
                 ]
             ]
         ]
-    ]],
+    ],
     subresourceOperations: [
-    'api_customers_invoices_get_subresource' => [
-        "normalization_context" => ["groups" => "invoice_subresource"]
-    ]],
+        'api_customers_invoices_get_subresource' => [
+            "normalization_context" => ["groups" => "invoice_subresource"]
+        ]
+    ],
     attributes: ["pagination_enabled" => false, "order" => ['sentAt' => 'desc']],
-    denormalizationContext: ['disable_type_enforcement'=> true],
+    denormalizationContext: ['disable_type_enforcement' => true],
     normalizationContext: ["groups" => "invoice_visibility"]
 )]
 #[ApiFilter(OrderFilter::class, properties: ["amount", "sentAt"])]
@@ -74,7 +77,7 @@ class Invoice
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message="Le statut de la facture est obligatoire")
-     * @Assert\Choice(choices={"SENT", "PAID", "CANCELED"}, message="Le statut doit être SENT, PAID ou CANCELED")
+     * @Assert\Choice(choices={"SENT", "PAID", "CANCELLED"}, message="Le statut doit être SENT, PAID ou CANCELLED")
      */
     #[Groups(["invoice_visibility", "customers_visibility", "invoice_subresource"])]
     private ?string $status;
@@ -99,7 +102,7 @@ class Invoice
      * @return User
      */
     #[Groups(["invoice_visibility"])]
-    public function getUser() : User
+    public function getUser(): User
     {
         return $this->customer->getUser();
     }
