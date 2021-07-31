@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Field from "../components/forms/Field";
 import CustomersApi from "../services/CustomersApi";
+import FormContentLoader from "../components/loaders/FormContentLoader";
 
 const CustomerPage = ({ match, history }) => {
 	const { id = "new" } = match.params;
-
+	const [loading, setLoading] = useState(false);
 	const [customer, setCustomer] = useState({
 		lastName: "",
 		firstName: "",
@@ -25,11 +26,13 @@ const CustomerPage = ({ match, history }) => {
 	const fetchCustomer = async (id) => {
 		const { firstName, lastName, email, company } = await CustomersApi.find(id);
 		setCustomer({ firstName, lastName, email, company });
+		setLoading(false);
 	};
 
 	useEffect(() => {
 		if (id !== "new") {
 			setEditing(true);
+			setLoading(true);
 			try {
 				const data = fetchCustomer(id);
 			} catch (error) {
@@ -73,50 +76,53 @@ const CustomerPage = ({ match, history }) => {
 			{(!editing && <h1>Création d'un Customer</h1>) || (
 				<h1>Modification du client</h1>
 			)}
+			{loading && <FormContentLoader />}
 
-			<form onSubmit={handleSubmit}>
-				<Field
-					name="lastName"
-					label="Nom de famille"
-					placeholder="Nom du famille du client"
-					value={customer.lastName}
-					onChange={handleChange}
-					error={errors.lastName}
-				/>
-				<Field
-					name="firstName"
-					label="Prénom"
-					placeholder="Prénom du client"
-					value={customer.firstName}
-					onChange={handleChange}
-					error={errors.firstName}
-				/>
-				<Field
-					name="email"
-					label="Email"
-					placeholder="Email du client"
-					value={customer.email}
-					onChange={handleChange}
-					error={errors.email}
-				/>
-				<Field
-					name="company"
-					label="Entreprise"
-					placeholder="Entreprise du client"
-					value={customer.company}
-					onChange={handleChange}
-					error={errors.company}
-				/>
+			{!loading && (
+				<form onSubmit={handleSubmit}>
+					<Field
+						name="lastName"
+						label="Nom de famille"
+						placeholder="Nom du famille du client"
+						value={customer.lastName}
+						onChange={handleChange}
+						error={errors.lastName}
+					/>
+					<Field
+						name="firstName"
+						label="Prénom"
+						placeholder="Prénom du client"
+						value={customer.firstName}
+						onChange={handleChange}
+						error={errors.firstName}
+					/>
+					<Field
+						name="email"
+						label="Email"
+						placeholder="Email du client"
+						value={customer.email}
+						onChange={handleChange}
+						error={errors.email}
+					/>
+					<Field
+						name="company"
+						label="Entreprise"
+						placeholder="Entreprise du client"
+						value={customer.company}
+						onChange={handleChange}
+						error={errors.company}
+					/>
 
-				<div className="form-group">
-					<button type="submit" className="btn btn-success">
-						Enregistrer
-					</button>
-					<Link to="/customers" className="btn btn-link">
-						Retour à la liste
-					</Link>
-				</div>
-			</form>
+					<div className="form-group">
+						<button type="submit" className="btn btn-success">
+							Enregistrer
+						</button>
+						<Link to="/customers" className="btn btn-link">
+							Retour à la liste
+						</Link>
+					</div>
+				</form>
+			)}
 		</>
 	);
 };

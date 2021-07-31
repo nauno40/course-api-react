@@ -5,6 +5,7 @@ import Field from "../components/forms/Field";
 import Select from "../components/forms/Select";
 import CustomersApi from "../services/CustomersApi";
 import InvoicesApi from "../services/InvoicesApi";
+import FormContentLoader from "../components/loaders/FormContentLoader";
 
 const InvoicePage = ({ match, history }) => {
 	const { id = "new" } = match.params;
@@ -20,6 +21,7 @@ const InvoicePage = ({ match, history }) => {
 		customer: "",
 		status: "",
 	});
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
 		fetchCustomers();
@@ -36,6 +38,7 @@ const InvoicePage = ({ match, history }) => {
 		try {
 			const { amount, status, customer } = await InvoicesApi.find(id);
 			setInvoice({ amount, status, customer: customer.id });
+			setLoading(false);
 		} catch (error) {
 			history.replace("/invoices");
 		}
@@ -45,7 +48,7 @@ const InvoicePage = ({ match, history }) => {
 		try {
 			const data = await CustomersApi.findAll();
 			setCustomers(data);
-
+			setLoading(false);
 			if (!invoice.customer && !id)
 				setInvoice({ ...invoice, customer: data[0].id });
 		} catch (error) {
@@ -64,10 +67,10 @@ const InvoicePage = ({ match, history }) => {
 		try {
 			if (editing) {
 				const response = await InvoicesApi.update(id, invoice);
-                toast.success("La modification a été effectué avec succès");
+				toast.success("La modification a été effectué avec succès");
 			} else {
 				const response = await InvoicesApi.create(invoice);
-                toast.success("La création a été effectué avec succès");
+				toast.success("La création a été effectué avec succès");
 				history.replace("/invoices");
 			}
 		} catch ({ response }) {
@@ -78,7 +81,7 @@ const InvoicePage = ({ match, history }) => {
 					apiErrors[propertyPath] = message;
 				});
 				setErrors(apiErrors);
-                toast.error("Une erreur est survenue");
+				toast.error("Une erreur est survenue");
 			}
 		}
 	};
@@ -88,52 +91,57 @@ const InvoicePage = ({ match, history }) => {
 			{(editing && <h1>Modification d'une facture</h1>) || (
 				<h1>Création de facture</h1>
 			)}
-			<form onSubmit={handleSubmit}>
-				<Field
-					name="amount"
-					type="number"
-					placeholder="Montant de la facture"
-					label="Montant"
-					onChange={handleChange}
-					value={invoice.amount}
-					error={errors.amount}
-				/>
+			{loading && <FormContentLoader />}
+			{!loading && (
+				<>
+					<form onSubmit={handleSubmit}>
+						<Field
+							name="amount"
+							type="number"
+							placeholder="Montant de la facture"
+							label="Montant"
+							onChange={handleChange}
+							value={invoice.amount}
+							error={errors.amount}
+						/>
 
-				<Select
-					name="customer"
-					label="Client"
-					value={invoice.customer}
-					error={errors.customer}
-					onChange={handleChange}
-				>
-					{customers.map((customer) => (
-						<option key={customer.id} value={customer.id}>
-							{customer.firstName} {customer.lastName}
-						</option>
-					))}
-				</Select>
+						<Select
+							name="customer"
+							label="Client"
+							value={invoice.customer}
+							error={errors.customer}
+							onChange={handleChange}
+						>
+							{customers.map((customer) => (
+								<option key={customer.id} value={customer.id}>
+									{customer.firstName} {customer.lastName}
+								</option>
+							))}
+						</Select>
 
-				<Select
-					name="status"
-					label="Statut"
-					value={invoice.status}
-					error={errors.status}
-					onChange={handleChange}
-				>
-					<option value="SENT">Envoyée</option>
-					<option value="PAID">Payée</option>
-					<option value="CANCELLED">Annulée</option>
-				</Select>
+						<Select
+							name="status"
+							label="Statut"
+							value={invoice.status}
+							error={errors.status}
+							onChange={handleChange}
+						>
+							<option value="SENT">Envoyée</option>
+							<option value="PAID">Payée</option>
+							<option value="CANCELLED">Annulée</option>
+						</Select>
 
-				<div className="form-group">
-					<button type="submit" className="btn btn-success">
-						Enregister
-					</button>
-				</div>
-			</form>
-			<Link to="/invoices" className="btn btn-link">
-				Retour aux factures
-			</Link>
+						<div className="form-group">
+							<button type="submit" className="btn btn-success">
+								Enregister
+							</button>
+						</div>
+					</form>
+					<Link to="/invoices" className="btn btn-link">
+						Retour aux factures
+					</Link>
+				</>
+			)}
 		</div>
 	);
 };
