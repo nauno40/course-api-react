@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import Pagination from "../components/Pagination";
 import CustomersApi from "../services/CustomersApi";
 
@@ -13,7 +14,7 @@ const CustomersPage = () => {
 			const data = await CustomersApi.findAll();
 			setCustomers(data);
 		} catch (error) {
-			console.log(error.response);
+			toast.error('Impossible de charger les clients');
 		}
 	};
 
@@ -24,11 +25,13 @@ const CustomersPage = () => {
 	const handleDelete = async (id) => {
 		const originalCustomers = [...customers];
 		setCustomers(customers.filter((customer) => customer.id !== id));
+        toast.success('Client supprimé');
 
 		try {
 			await CustomersApi.delete(id);
 		} catch (error) {
 			setCustomers(originalCustomers);
+            toast.error('Impossible de supprimer le client');
 		}
 	};
 

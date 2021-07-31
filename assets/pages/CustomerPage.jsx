@@ -33,7 +33,7 @@ const CustomerPage = ({ match, history }) => {
 			try {
 				const data = fetchCustomer(id);
 			} catch (error) {
-				console.log(error.response);
+				toast.error("Le cient n'as pas pu être chargé");
 			}
 		}
 	}, [id]);
@@ -46,11 +46,13 @@ const CustomerPage = ({ match, history }) => {
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 		try {
+			setErrors({});
 			if (editing) {
 				const response = await CustomersApi.update(id, customer);
+				toast.success("Le client à bien été modifié");
 			} else {
 				const response = await CustomersApi.create(customer);
-				setErrors({});
+				toast.error("Le client à bien été créé");
 				history.replace("/customers");
 			}
 		} catch ({ response }) {
@@ -61,6 +63,7 @@ const CustomerPage = ({ match, history }) => {
 					apiErrors[propertyPath] = message;
 				});
 				setErrors(apiErrors);
+				toast.error("Des erreurs dans votre formulaire");
 			}
 		}
 	};
