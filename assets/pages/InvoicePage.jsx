@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import Field from "../components/forms/Field";
 import Select from "../components/forms/Select";
 import CustomersApi from "../services/CustomersApi";
@@ -48,6 +49,7 @@ const InvoicePage = ({ match, history }) => {
 			if (!invoice.customer && !id)
 				setInvoice({ ...invoice, customer: data[0].id });
 		} catch (error) {
+			toast.error("Une erreur est survenue");
 			history.replace("/invoices");
 		}
 	};
@@ -62,8 +64,10 @@ const InvoicePage = ({ match, history }) => {
 		try {
 			if (editing) {
 				const response = await InvoicesApi.update(id, invoice);
+                toast.success("La modification a été effectué avec succès");
 			} else {
 				const response = await InvoicesApi.create(invoice);
+                toast.success("La création a été effectué avec succès");
 				history.replace("/invoices");
 			}
 		} catch ({ response }) {
@@ -74,6 +78,7 @@ const InvoicePage = ({ match, history }) => {
 					apiErrors[propertyPath] = message;
 				});
 				setErrors(apiErrors);
+                toast.error("Une erreur est survenue");
 			}
 		}
 	};

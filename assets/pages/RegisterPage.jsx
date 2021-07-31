@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Field from "../components/forms/Field";
 import UsersApi from "../services/UsersApi";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const RegisterPage = ({ history }) => {
 	const [user, setUser] = useState({
@@ -32,12 +33,14 @@ const RegisterPage = ({ history }) => {
 		if (user.password !== user.passwordConfirm) {
 			apiErrors.passwordConfirm = "Les mots de passe ne correspondent pas";
 			setErrors(apiErrors);
+			toast.error("Les mots de passe ne correspondent pas");
 			return;
 		}
 
 		try {
 			const response = await UsersApi.register(user);
 			setErrors({});
+			toast.success("Votre compte a été créé avec succès");
 			history.replace(`/login`);
 		} catch ({ response }) {
 			const { violations } = response.data;
@@ -47,6 +50,7 @@ const RegisterPage = ({ history }) => {
 				});
 				setErrors(apiErrors);
 			}
+			toast.error("Une erreur est survenue lors de l'enregistrement");
 		}
 	};
 
