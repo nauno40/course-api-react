@@ -1,14 +1,14 @@
-version: '3.7'
+version: "3.7"
 services:
     database:
-        image: 'mysql:8.0'
+        image: "mysql:8.0"
         environment:
             - MYSQL_ROOT_PASSWORD=password
             - MYSQL_DATABASE=main
             - MYSQL_USER=test
             - MYSQL_PASSWORD=password
         ports:
-            - '3306:3306'
+            - "3306:3306"
 
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
@@ -23,13 +23,13 @@ services:
 
     webserver:
         container_name: webserver
-        image: 'nginx:alpine'
+        image: "nginx:alpine"
         working_dir: /app
         volumes:
-            - '.:/app'
-            - './docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf'
+            - ".:/app"
+            - "./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf"
         ports:
-            - '80:80'
+            - "80:80"
 
     php-fpm:
         container_name: php
@@ -38,5 +38,5 @@ services:
         build: docker/php-fpm
         working_dir: /app
         volumes:
-            - '.:/app'
-            - './docker/php-fpm/php-ini-overrides.ini:/etc/php/8.0/fpm/conf.d/99-overrides.ini'
+            - ".:/app"
+            - "./docker/php-fpm/php-ini-overrides.ini:/etc/php/8.0/fpm/conf.d/99-overrides.ini"
