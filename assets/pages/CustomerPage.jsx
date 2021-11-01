@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import Field from "../components/forms/Field";
 import CustomersApi from "../services/CustomersApi";
 import FormContentLoader from "../components/loaders/FormContentLoader";
@@ -55,7 +56,7 @@ const CustomerPage = ({ match, history }) => {
 				toast.success("Le client à bien été modifié");
 			} else {
 				const response = await CustomersApi.create(customer);
-				toast.error("Le client à bien été créé");
+				toast.success("Le client à bien été créé");
 				history.replace("/customers");
 			}
 		} catch ({ response }) {
